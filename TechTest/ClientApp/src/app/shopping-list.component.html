@@ -1,0 +1,53 @@
+<!-- shopping-list.component.html -->
+<div class="p-4">
+  <h2 class="text-2xl font-semibold mb-4">To Buy List</h2>
+
+  <ul class="mb-4">
+    <li *ngFor="let item of shoppingList" class="mb-2 flex items-center">
+      <i *ngIf="item.isImportant"
+         class="fas fa-star text-yellow-500 mr-2"></i>
+      <span [class.font-bold]="item.isImportant">{{ item.name }}</span>
+
+      <button (click)="markAsImportant(item)"
+              class="ml-2 px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600">
+        Mark as Important
+      </button>
+      <button (click)="moveToPreviouslyBought(item)"
+              class="ml-auto px-2 py-1 rounded bg-green-500 text-white hover:bg-green-600">
+        Move to Previously Bought
+      </button>
+    </li>
+  </ul>
+
+  <h2 class="text-2xl font-semibold mb-4">Previously Bought List</h2>
+
+  <ul>
+    <li *ngFor="let item of previouslyBoughtList" class="mb-2">
+      <i *ngIf="item.isImportant"
+         class="fas fa-star text-yellow-500 mr-2"></i>
+      <span [class.font-bold]="item.isImportant">{{ item.name }}</span>
+    
+
+      <button (click)="markAsImportant(item)"
+              class="ml-2 px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600">
+        Mark as Important
+      </button>
+      <button (click)="moveToToBuy(item)"
+              class="ml-2 px-2 py-1 rounded bg-blue-500 text-white hover:bg-green-600">
+        Move to To Buy
+      </button>
+    </li>
+  </ul>
+
+  <form (submit)="addItem()" class="flex items-center mt-4">
+    <input type="text"
+           [(ngModel)]="newItemName"
+           placeholder="Item name"
+           [ngModelOptions]="{ standalone: true }"
+           class="flex-1 mr-2 px-4 py-2 rounded border" />
+    <button type="submit"
+            class="px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600">
+      Add
+    </button>
+  </form>
+</div>
