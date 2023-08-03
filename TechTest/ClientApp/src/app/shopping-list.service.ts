@@ -11,8 +11,8 @@ export class ShoppingListService {
 
   constructor(private http: HttpClient) { }
 
-  getShoppingList(): Observable<ShoppingListItem[]> {
-    return this.http.get<ShoppingListItem[]>(`${this.baseUrl}/shoppinglist`);
+  getShoppingList(): Observable<{ toBuyList: ShoppingListItem[], previouslyBoughtList: ShoppingListItem[] }> {
+    return this.http.get<{ toBuyList: ShoppingListItem[], previouslyBoughtList: ShoppingListItem[] }>(`${this.baseUrl}/shoppinglist`);
   }
 
   addShoppingListItem(item: ShoppingListItem): Observable<ShoppingListItem> {
@@ -25,17 +25,27 @@ export class ShoppingListService {
 
   markAsBought(item: ShoppingListItem): Observable<ShoppingListItem> {
     // This method updates the isBought property to true
-    item.isBought = true;
-    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/markAsBought`, item);
+    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/moveToPreviouslyBought`, item);
   }
 
   markAsNotBought(item: ShoppingListItem): Observable<ShoppingListItem> {
     // This method updates the isBought property to false
-    item.isBought = false;
-    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/markAsNotBought`, item);
+
+    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/moveToBuy`, item);
   }
 
-  sortShoppingListAlphabetically(shoppingList: ShoppingListItem[]): void {
-    shoppingList.sort((a, b) => a.name.localeCompare(b.name));
+  copyToBuyListItem(item: ShoppingListItem): Observable<ShoppingListItem> {
+    // If the item already exists in the To Buy list, increment its amount by 1
+    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/moveToBuy`, item);
+
+  }
+  deleteItem(item: ShoppingListItem): Observable<ShoppingListItem> {
+    return this.http.put<ShoppingListItem>(`${this.baseUrl}/shoppinglist/${item.id}/delete`, item);
+
+  }
+
+  sortShoppingListAlphabetically(toBuyList: ShoppingListItem[], previouslyBoughtList: ShoppingListItem[]): void {
+    toBuyList.sort((a, b) => a.name.localeCompare(b.name));
+    previouslyBoughtList.sort((a, b) => a.name.localeCompare(b.name));
   }
 }

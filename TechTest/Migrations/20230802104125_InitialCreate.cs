@@ -24,6 +24,8 @@ namespace TechTest.Migrations
                 {
                     table.PrimaryKey("PK_ShoppingList", x => x.Id);
                 });
+
+
         }
 
         /// <inheritdoc />

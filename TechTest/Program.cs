@@ -46,4 +46,6 @@ builder.Services.AddCors(options =>
 
         app.MapFallbackToFile("index.html");
 
+        
+
         app.Run();

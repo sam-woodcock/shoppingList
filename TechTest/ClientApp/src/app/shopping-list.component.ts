@@ -1,4 +1,3 @@
-// shopping-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ShoppingListItem } from './shared/shopping-list-item.model';
 import { ShoppingListService } from './shopping-list.service';
@@ -16,21 +15,13 @@ export class ShoppingListComponent implements OnInit {
 
   ngOnInit() {
     this.loadShoppingList();
-    this.loadPreviouslyBoughtList();
-   
   }
 
   loadShoppingList() {
     this.shoppingListService.getShoppingList().subscribe((data) => {
-      this.shoppingList = data.filter((item) => !item.isBought);
-      this.shoppingListService.sortShoppingListAlphabetically(this.shoppingList);
-    });
-  }
-
-  loadPreviouslyBoughtList() {
-    this.shoppingListService.getShoppingList().subscribe((data) => {
-      this.shoppingList = data.filter((item) => item.isBought);
-      this.shoppingListService.sortShoppingListAlphabetically(this.shoppingList);
+      this.shoppingList = data.toBuyList;
+      this.previouslyBoughtList = data.previouslyBoughtList;
+      this.sortItemsByImportance();
     });
   }
 
@@ -39,12 +30,12 @@ export class ShoppingListComponent implements OnInit {
       const newItem: ShoppingListItem = {
         id: 0, // Assign a temporary ID (assuming you will get the real ID from the backend)
         name: this.newItemName.trim(),
-        isBought: false, // New item is not bought by default
         isImportant: false, // New item is not important by default
+        amount: 1,
       };
 
-      this.shoppingListService.addShoppingListItem(newItem).subscribe((addedItem) => {
-        this.shoppingList.push(addedItem);
+      this.shoppingListService.addShoppingListItem(newItem).subscribe(() => {
+        this.loadShoppingList();
         this.newItemName = ''; // Clear the input field after adding the item
       });
     }
@@ -52,37 +43,46 @@ export class ShoppingListComponent implements OnInit {
 
   markAsImportant(item: ShoppingListItem) {
     item.isImportant = true;
-    this.shoppingListService.updateShoppingListItem(item).subscribe();
-    this.sortItemsByImportance();
-    this.loadShoppingList();
-    this.loadPreviouslyBoughtList();
+    this.shoppingListService.updateShoppingListItem(item).subscribe(() => {
+      this.loadShoppingList();
+    });
   }
 
   moveToPreviouslyBought(item: ShoppingListItem) {
-    item.isBought = true;
-    this.shoppingListService.updateShoppingListItem(item).subscribe((item)=> {
+    this.shoppingListService.markAsBought(item).subscribe(() => {
       this.loadShoppingList();
-      this.loadPreviouslyBoughtList();
     });
   }
 
   moveToToBuy(item: ShoppingListItem) {
-    item.isBought = false;
-    this.shoppingListService.updateShoppingListItem(item).subscribe((item) => {
+    this.shoppingListService.markAsNotBought(item).subscribe(() => {
       this.loadShoppingList();
-      this.loadPreviouslyBoughtList();
     });
   }
 
-  private sortItemsByImportance() {
-    this.shoppingList.sort((a, b) => {
-      if (a.isImportant && !b.isImportant) {
-        return -1;
-      } else if (!a.isImportant && b.isImportant) {
-        return 1;
-      } else {
-        return 0;
-      }
+  copyToBuy(item: ShoppingListItem) {
+    this.shoppingListService.copyToBuyListItem(item).subscribe(() => {
+      this.loadShoppingList();
     });
+  }
+  delete(item: ShoppingListItem) {
+    this.shoppingListService.deleteItem(item).subscribe(() => {
+      this.loadShoppingList();
+    });
+  }
+  private sortItemsByImportance() {
+    const sortByImportanceAndName = (a: ShoppingListItem, b: ShoppingListItem) => {
+      if (a.isImportant && !b.isImportant) {
+        return -1; // a is important, b is not important, so a comes first
+      } else if (!a.isImportant && b.isImportant) {
+        return 1; // b is important, a is not important, so b comes first
+      } else {
+        // If both items have the same importance, sort alphabetically
+        return a.name.localeCompare(b.name);
+      }
+    };
+
+    this.shoppingList.sort(sortByImportanceAndName);
+    this.previouslyBoughtList.sort(sortByImportanceAndName);
   }
 }
