@@ -1,14 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using System.Collections.Generic;
 using System.Linq;
-using EntityFrameworkCoreMock;
-using NoMuda.Controllers;
-using NoMuda.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TechTest.Controllers;
+using TechTest.Models;
 
-namespace NoMuda.Tests
+namespace TechTest.Tests
 {
 
 
@@ -16,6 +14,7 @@ namespace NoMuda.Tests
     public class ShoppingListControllerTests
     {
         private ShoppingListController _controller;
+
 
 
         [TestInitialize]

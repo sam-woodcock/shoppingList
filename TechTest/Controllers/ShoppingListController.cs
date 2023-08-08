@@ -19,8 +19,8 @@ namespace TechTest.Controllers
 
         public class ShoppingListResponse
         {
-            public IEnumerable<ToBuyListItem> ToBuyList { get; set; }
-            public IEnumerable<PreviouslyBoughtListItem> PreviouslyBoughtList { get; set; }
+            public IEnumerable<ToBuyListItem>? ToBuyList { get; set; }
+            public IEnumerable<PreviouslyBoughtListItem>? PreviouslyBoughtList { get; set; }
         }
 
 
